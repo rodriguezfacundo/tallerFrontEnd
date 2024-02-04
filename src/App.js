@@ -1,10 +1,21 @@
-//import { Routes, Route, BrowserRouter} from 'react-router-dom';
+import {BrowserRouter as Router, Switch, Route, BrowserRouter,Routes} from 'react-router-dom'
 import React from 'react';
-import Usuarios from './components/Usuarios';
+import RegistroUsuario from './components/RegistroUsuario';
+import Navbar from './components/Navbar';
+import Inicio from './components/Inicio';
 
 function App() {
   return (
-    <Usuarios />
+    <Router>
+    <div>
+      <Navbar />
+      <Routes>
+        <Route path="/registroUsuario" element={<RegistroUsuario />} />
+        <Route path="/inicio" element={<Inicio />} />
+      </Routes>
+    </div>
+  </Router>
+    
   );
 }
 

@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import {show_alert} from '../functions';
 
-const Usuarios = () => {
+const RegistroUsuario = () => {
 
   //Creamos los states que se usaran luego
   const [paises, setPaises] = useState([]);
@@ -59,7 +59,7 @@ const Usuarios = () => {
   }
 
   return (
-    <div className='container'>
+    <div className='container' style={{ maxWidth: '400px', margin: 'auto', background: '#100e10', color: '#fff', padding: '20px', borderRadius: '10px', marginTop: '50px' }}>
       <h1 className='text-center'>Registro Usuario</h1>
       {/* Llamamos a la funcion de registrarUsuario cuando se hace submit al formulario */}
       {/* En cada input cada vez que se escucha el evento onChange vamos seteandolo a sus states */}
@@ -95,4 +95,4 @@ const Usuarios = () => {
   )
 }
 
-export default Usuarios;
+export default RegistroUsuario;
