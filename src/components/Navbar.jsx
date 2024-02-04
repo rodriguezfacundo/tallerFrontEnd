@@ -2,6 +2,7 @@ import React from 'react'
 import {Link} from 'react-router-dom'
 import { CgLogIn } from "react-icons/cg";
 import { CiHome } from "react-icons/ci";
+import { MdFastfood } from "react-icons/md";
 
 const Navbar = () => {
 
@@ -19,6 +20,9 @@ const Navbar = () => {
                     <ul className="navbar-nav mx-auto">
                         <li className="nav-item">
                             <Link className="nav-link" to='/inicio'><CiHome style={iconStyle}/></Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link className="nav-link" to='/registrarComida'><MdFastfood style={iconStyle}/></Link>
                         </li>
                     </ul>
                 </div>

@@ -2,31 +2,51 @@ import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import {show_alert} from '../functions';
 
-const RegistroComida = () => {
-    const [alimentos, setAlimentos] = useState([]);
-    const [idUsuario, setIdUsuario] = useState('');
-    const [idAlimento, setIdAlimento] = useState('');
-    const [cantidad, setCantidad] = useState('');
-    const [fecha, setFecha] = useState('');
+    const RegistroComida = () => {
+      const apiKey = localStorage.getItem('apiKey');
+      const id = localStorage.getItem('idUsuario');
+      
+      const [alimentos, setAlimentos] = useState([]);
+      const [idUsuario, setIdUsuario] = useState('');
+      const [idAlimento, setIdAlimento] = useState('');
+      const [cantidad, setCantidad] = useState('');
+      const [fecha, setFecha] = useState('');
+
 
     useEffect(() => {
         getAlimentos();
     }, [])
 
     const getAlimentos = async () =>{
-        const respuesta = await axios.get('https://calcount.develotion.com/registros.php');
-        console.log(respuesta.data.alimentos);
-        setAlimentos(respuesta.data.paises);
+      try{
+        if(apiKey.trim !== '' && (id !== '' || id !== 0)){
+          console.log('entro al get Alimentos');
+          console.log('apiKey antes de hacer la llamada get a alimentos', apiKey);
+          console.log('userId antes de hacer la llamada get a alimentos', id);
+          
+          const respuesta = await axios.get('https://calcount.develotion.com/alimentos.php', {
+            headers: {
+              'Content-Type': 'application/json',
+              'key': apiKey,
+              'idUser': id
+            }
+          });
+          console.log(respuesta.data.alimentos);
+          setAlimentos(respuesta.data.paises);
+        }
+      } catch(error){
+        console.log('catch error',error)
+      }
     };
     
     const registrarComida = async (e) =>{
         e.preventDefault()
-        
+        //Luego voy a hacer toda la logica para el registro de las comidas
     };
 
   return (
     <div className='container' style={{ maxWidth: '400px', margin: 'auto', background: '#100e10', color: '#fff', padding: '20px', borderRadius: '10px', marginTop: '50px' }}>
-      <h1 className='text-center'>Registro Usuario</h1>
+      <h1 className='text-center'>Registrar Comida</h1>
       <form onSubmit={registrarComida}>
         <div className="mb-3">
                 <label htmlFor ="select" className="form-label">Pais</label>

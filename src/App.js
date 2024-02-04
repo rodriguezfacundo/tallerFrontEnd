@@ -3,6 +3,8 @@ import React from 'react';
 import RegistroUsuario from './components/RegistroUsuario';
 import Navbar from './components/Navbar';
 import Inicio from './components/Inicio';
+import Login  from './components/Login';
+import RegistroComida from './components/RegistroComida';
 
 function App() {
   return (
@@ -12,6 +14,9 @@ function App() {
       <Routes>
         <Route path="/registroUsuario" element={<RegistroUsuario />} />
         <Route path="/inicio" element={<Inicio />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/registrarComida" element={<RegistroComida />} />
+
       </Routes>
     </div>
   </Router>

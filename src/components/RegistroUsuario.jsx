@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import {show_alert} from '../functions';
+import {Link} from 'react-router-dom'
 
 const RegistroUsuario = () => {
 
@@ -42,6 +43,8 @@ const RegistroUsuario = () => {
     //Mostramos la data recibida de la API con el registro, y en caso de que sea exitoso avisamos con un alert
     console.log(respuesta.data);
     if (respuesta.status === 200) {
+      localStorage.setItem('apiKey', respuesta.data.apiKey);
+      localStorage.setItem('idUsuario', respuesta.data.id);
       show_alert('Registrado con éxito', 'success');
     }
     } catch (error) {
@@ -87,6 +90,7 @@ const RegistroUsuario = () => {
                 ))
               }
             </select>
+            <Link to='/login' style={{color: 'white'}}>Ya estoy registrado</Link>
           </div>
           {/* Validamos que se puede submitear cuando se cumplan con los requisitos del disabled */}
         <button className="btn btn-success" type='submit' disabled={usuario.length<5 || password.length<5 || calorias<=0 || idPais <=0}>Enviar</button>
