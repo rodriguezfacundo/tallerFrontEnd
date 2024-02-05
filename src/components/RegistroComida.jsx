@@ -4,44 +4,70 @@ import {show_alert} from '../functions';
 
     const RegistroComida = () => {
       const apiKey = localStorage.getItem('apiKey');
-      const id = localStorage.getItem('idUsuario');
+      const idUsuario = localStorage.getItem('idUsuario');
       
       const [alimentos, setAlimentos] = useState([]);
-      const [idUsuario, setIdUsuario] = useState('');
       const [idAlimento, setIdAlimento] = useState('');
       const [cantidad, setCantidad] = useState('');
       const [fecha, setFecha] = useState('');
 
-
-    useEffect(() => {
-        getAlimentos();
-    }, [])
-
-    const getAlimentos = async () =>{
-      try{
-        if(apiKey.trim !== '' && (id !== '' || id !== 0)){
-          console.log('entro al get Alimentos');
-          console.log('apiKey antes de hacer la llamada get a alimentos', apiKey);
-          console.log('userId antes de hacer la llamada get a alimentos', id);
-          
-          const respuesta = await axios.get('https://calcount.develotion.com/alimentos.php', {
-            headers: {
-              'Content-Type': 'application/json',
-              'key': apiKey,
-              'idUser': id
+      const getAlimentos = async () =>{
+        try{
+          if(apiKey !== '' && (idUsuario !== '' || idUsuario !== 0)){
+            console.log('entro al get Alimentos');
+            console.log('apiKey antes de hacer la llamada get a alimentos', apiKey);
+            console.log('userId antes de hacer la llamada get a alimentos', idUsuario);
+            
+            const respuesta = await axios.get('https://calcount.develotion.com/alimentos.php', {
+              headers: {
+                'Content-Type': 'application/json',
+                'apikey' : apiKey,
+                'idUser': idUsuario
+              }
+            });
+            console.log(respuesta.data.alimentos);
+            if(respuesta.status === 200){
+              setAlimentos(respuesta.data.alimentos);
             }
-          });
-          console.log(respuesta.data.alimentos);
-          setAlimentos(respuesta.data.paises);
+          }
+        } catch(error){
+          console.log('catch error',error)
         }
-      } catch(error){
-        console.log('catch error',error)
       }
-    };
+
+      useEffect(() =>{
+        getAlimentos();
+      }, []);
+
+      
+
     
     const registrarComida = async (e) =>{
         e.preventDefault()
-        //Luego voy a hacer toda la logica para el registro de las comidas
+        
+        try {
+          if(apiKey !== '' && (idUsuario !== '' || idUsuario !== 0)){
+            const respuesta = await axios.post('https://calcount.develotion.com/registros.php',{
+              headers:{
+                'Content-Type': 'application/json',
+                'apikey' : apiKey,
+                'idUser': idUsuario
+              },
+              body:{
+                idAlimento,
+                idUsuario,
+                cantidad,
+                fecha
+              }
+            })
+            console.log(respuesta.data);
+            if(respuesta.status === 200){
+              show_alert('Tu nuevo registro se ha realizado con éxito', 'success');
+            }
+          }
+        } catch (error) {
+            console.log('error en post de registro alimento', error);
+        }
     };
 
   return (

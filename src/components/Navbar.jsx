@@ -6,6 +6,8 @@ import { MdFastfood } from "react-icons/md";
 
 const Navbar = () => {
 
+    const apiKey = localStorage.getItem('apiKey');
+
     const iconStyle = {
         fontSize: '2.5rem',
         marginRight: '10px',
