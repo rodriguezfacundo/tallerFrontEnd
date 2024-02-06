@@ -4,6 +4,7 @@ import RegistroUsuario from './components/RegistroUsuario';
 import Navbar from './components/Navbar';
 import Inicio from './components/Inicio';
 import Login  from './components/Login';
+import ObtenerRegistros from './components/ObtenerRegistros';
 import RegistroComida from './components/RegistroComida';
 
 function App() {
@@ -16,6 +17,8 @@ function App() {
         <Route path="/inicio" element={<Inicio />} />
         <Route path="/login" element={<Login />} />
         <Route path="/registrarComida" element={<RegistroComida />} />
+        <Route path="/obtenerRegistros" element={<ObtenerRegistros />} />
+
 
       </Routes>
     </div>

@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import {show_alert} from '../functions';
-import { Navigate } from 'react-router-dom';
-import Inicio from './Inicio';
-
+import { useNavigate } from 'react-router-dom';
 
 export const Login = () => {
+  const navigate = useNavigate();
+
     const [usuario, setUsuario] = useState('');
     const [password, setPassword] = useState('');
     const [redirect, setRedirect] = useState(false);
@@ -26,19 +26,19 @@ export const Login = () => {
                 setRedirect(true);
             }
         } catch(error){
-      if(error.response && error.response.status === 409){
-        show_alert('Usuario y/o contraseña incorrectos', 'warning');
-        
-      }else {
-        show_alert('Error al iniciar sesion. Inténtelo de nuevo más tarde.', 'warning');
-        console.log(error);
-      }
-        }
+          if(error.response && error.response.status === 409){
+            show_alert('Usuario o password incorrecta', 'warning');
+            
+          }else {
+            show_alert('Error al iniciar sesion. Inténtelo de nuevo más tarde.', 'warning');
+            console.log(error);
+          }
+            }
     }
 
     //Condicional para luego de logueado llevar al usuario al inicio
     if (redirect) {
-        return <Navigate to="/inicio" />;
+        return navigate("/inicio");
     }
 
   return (

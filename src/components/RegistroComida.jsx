@@ -1,15 +1,19 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import {show_alert} from '../functions';
+import { useNavigate } from 'react-router-dom';
 
     const RegistroComida = () => {
       const apiKey = localStorage.getItem('apiKey');
       const idUsuario = localStorage.getItem('idUsuario');
+
+      const navigate = useNavigate();
       
       const [alimentos, setAlimentos] = useState([]);
       const [idAlimento, setIdAlimento] = useState('');
       const [cantidad, setCantidad] = useState('');
       const [fecha, setFecha] = useState('');
+
 
       const getAlimentos = async () =>{
         try{
@@ -35,38 +39,87 @@ import {show_alert} from '../functions';
         }
       }
 
-      useEffect(() =>{
-        getAlimentos();
-      }, []);
 
+      //Funcion que valida que la fecha ingresada sea HOY, o un dia antes que HOY
+      const validarFecha = () => {
+        let isValid = false;
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0);
+        console.log('hoy',hoy);
+        
+        const fechaIngresada = new Date(fecha);
+        fechaIngresada.setHours(0, 0, 0, 0);
+        fechaIngresada.setDate(fechaIngresada.getDate()+1);
+        console.log('fechaIngresada',fechaIngresada)
       
+        const fechaAnterior = new Date(hoy);
+        fechaAnterior.setDate(hoy.getDate() - 1);
+        console.log('ayer',fechaAnterior)
+      
+        if(fechaIngresada.getDate() === hoy.getDate()|| fechaIngresada.getDate() === fechaAnterior.getDate()){
+          isValid = true;
+        }
+        return isValid;
+      };
 
+      //Funcion que valida que este logueado el usuario al entrar a la pagina, en caso de que no se avisa y dirije al registro
+      const validarLogin = (apiKeyParam) => {
+        if (apiKeyParam === null) {
+          show_alert('Debes iniciar sesión', 'warning');
+          navigate('/registroUsuario');
+          return false;
+        }
+        return true;
+      };
+
+      useEffect(() => {
+        const isValid = validarLogin(apiKey);
+        if (isValid) {
+          getAlimentos();
+        }
+      }, [apiKey, idUsuario, navigate]);
+    
     
     const registrarComida = async (e) =>{
         e.preventDefault()
         
+        if (!validarFecha()) {
+          show_alert('La fecha debe ser hoy o anterior.', 'warning');
+          return;
+        }
+        
         try {
           if(apiKey !== '' && (idUsuario !== '' || idUsuario !== 0)){
-            const respuesta = await axios.post('https://calcount.develotion.com/registros.php',{
-              headers:{
-                'Content-Type': 'application/json',
-                'apikey' : apiKey,
-                'idUser': idUsuario
-              },
-              body:{
+            const respuesta = await axios.post(
+              'https://calcount.develotion.com/registros.php',
+              {
                 idAlimento,
                 idUsuario,
                 cantidad,
-                fecha
+                fecha,
+              },
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                  'apikey': apiKey,
+                  'idUser': idUsuario,
+                },
               }
-            })
+            );
             console.log(respuesta.data);
             if(respuesta.status === 200){
               show_alert('Tu nuevo registro se ha realizado con éxito', 'success');
             }
           }
         } catch (error) {
-            console.log('error en post de registro alimento', error);
+          if(error.response && error.response.status === 401){
+            show_alert('Credenciales inválidas', 'warning');
+            console.log(error);
+            
+          }else {
+            show_alert('Error al registrar comida. Inténtelo de nuevo más tarde.', 'warning');
+            console.log(error);
+          }
         }
     };
 

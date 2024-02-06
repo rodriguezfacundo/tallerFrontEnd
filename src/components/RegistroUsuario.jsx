@@ -2,8 +2,12 @@ import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import {show_alert} from '../functions';
 import {Link} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
+
 
 const RegistroUsuario = () => {
+  const navigate = useNavigate();
+
 
   //Creamos los states que se usaran luego
   const [paises, setPaises] = useState([]);
@@ -11,11 +15,7 @@ const RegistroUsuario = () => {
   const [password, setPassword] = useState('');
   const [idPais, setIdPais] = useState('');
   const [calorias, setCalorias] = useState('');
-
-  //Cremamos un useEffect Para cargar los paises cuando se recarga la pagina
-  useEffect(() =>{
-    getPaises();
-  }, []);
+  const [redirect, setRedirect] = useState(false);
 
   //Obtenemos paises para luego mostrar en el select (luego hay que cambiarlo a un componente de tipo Paises)
   const getPaises = async () =>{
@@ -23,6 +23,11 @@ const RegistroUsuario = () => {
     //Los seteamos para luego acceder a ellos llamando a paises.
     setPaises(respuesta.data.paises)
   }
+
+    //Cremamos un useEffect Para cargar los paises cuando se recarga la pagina
+    useEffect(() =>{
+      getPaises();
+    }, []);
 
   //Se hace el POST a la api pasando todos los valores ya validados
   const registrarUsuario = async(e) =>{
@@ -46,6 +51,7 @@ const RegistroUsuario = () => {
       localStorage.setItem('apiKey', respuesta.data.apiKey);
       localStorage.setItem('idUsuario', respuesta.data.id);
       show_alert('Registrado con éxito', 'success');
+      setRedirect(true);
     }
     } catch (error) {
       //Validamos que el error tenga respuesta y si el status es 409 es porque ya se registro
@@ -60,6 +66,11 @@ const RegistroUsuario = () => {
     }
 
   }
+
+      //Condicional para luego de logueado llevar al usuario al inicio
+      if (redirect) {
+        return navigate('/inicio');
+    }
 
   return (
     <div className='container' style={{ maxWidth: '400px', margin: 'auto', background: '#100e10', color: '#fff', padding: '20px', borderRadius: '10px', marginTop: '50px' }}>
