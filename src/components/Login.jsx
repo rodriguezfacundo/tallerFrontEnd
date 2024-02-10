@@ -2,39 +2,38 @@ import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import {show_alert} from '../functions';
 import { useNavigate } from 'react-router-dom';
+import { UseDispatch, useDispatch, useSelector } from 'react-redux';
+import {loginUser} from '../Store/UserSlice';
 
 export const Login = () => {
-  const navigate = useNavigate();
 
     const [usuario, setUsuario] = useState('');
     const [password, setPassword] = useState('');
     const [redirect, setRedirect] = useState(false);
 
-    const iniciarSesion = async (e) => {
+    //Redux state
+    const {loading, error} = useSelector((state)=> state.user);
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+
+    const iniciarSesion = (e) => {
         e.preventDefault();
 
-        try{
-            const respuesta = await axios.post('https://calcount.develotion.com/login.php', {
-                usuario,
-                password
-            },{ timeout: 20000 });
-            console.log(respuesta.data);
-            if(respuesta.status === 200){
-                localStorage.setItem('apiKey', respuesta.data.apiKey);
-                localStorage.setItem('idUsuario', respuesta.data.id);
-                show_alert('Bienvenido nuevamente!', 'success')
-                setRedirect(true);
-            }
-        } catch(error){
-          if(error.response && error.response.status === 409){
-            show_alert('Usuario o password incorrecta', 'warning');
-            
-          }else {
-            show_alert('Error al iniciar sesion. Inténtelo de nuevo más tarde.', 'warning');
-            console.log(error);
+        let userCredenciales = {
+          usuario, password
+        };
+
+        dispatch(loginUser(userCredenciales)).then((result) =>{
+          if(result.payload){
+            setUsuario('');
+            setPassword('');
+            navigate('/inicio')
           }
-            }
-    }
+        })
+
+      }
 
     //Condicional para luego de logueado llevar al usuario al inicio
     if (redirect) {
@@ -53,8 +52,11 @@ export const Login = () => {
             <label htmlFor ="inputPassword" className="form-label">Contraseña</label>
             <input type="password" id="inputPassword" className="form-control" placeholder="*****" onChange={(e) => setPassword(e.target.value)}/>
           </div>
-        <button className="btn btn-success" type='submit' disabled={usuario.length<5 || password.length<5}>Enviar</button>
+        <button className="btn btn-success" type='submit' disabled={usuario.length<5 || password.length<5}>{loading? 'Iniciando sesion...': 'Iniciar Sesion'}</button>
       </form>
+      {error &&(
+          <div className='alert alert-danger' style={{ marginTop: '20px'}} role='alert'>{error}</div>
+        )}
     </div>
   )
 }
