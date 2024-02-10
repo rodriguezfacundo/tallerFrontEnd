@@ -11,18 +11,16 @@ export const eliminarRegistro = createAsyncThunk(
     'registros/eliminar',
     async(credenciales) =>{
         console.log('data que llega al eliminar Registro', credenciales)
-        const request = await axios.get(
-            'https://calcount.develotion.com/alimentos.php',
-            {
-              headers: {
+        const request = await axios.delete(`https://calcount.develotion.com/registros.php?idRegistro=${credenciales.idRegistro}`, {
+            headers: {
                 'Content-Type': 'application/json',
-                'apikey': credenciales.apiKey,
-                'iduser': credenciales.idUsuario,
-              },
+                  'apikey': credenciales.apiKey,
+                  'iduser': credenciales.idUsuario,
+                }
             }
-          );
-        const respuesta = await request.data.alimentos;
-        console.log('respuesta obtener alimentos', respuesta);
+        )
+        const respuesta = await request.data;
+        console.log('respuesta eliminar registro', respuesta);
         return respuesta;
 })
 

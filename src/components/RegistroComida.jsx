@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {comidaRegister} from '../Store/RegisterComidaSlice';
 import {obtenerAlimentos} from '../Store/ObtenerAlimentosSlice';
+import { obtenerRegistrosComida } from '../Store/ObtenerRegistrosComidasSlice';
 
 
 const RegistroComida = ({ nuevoRegistro }) => {
@@ -80,6 +81,7 @@ const RegistroComida = ({ nuevoRegistro }) => {
         setFecha('');
         setIdAlimento('');
         show_alert('Comida registrada con exito', 'success')
+        dispatch(obtenerRegistrosComida(credenciales));
         
       }
     })
@@ -93,7 +95,7 @@ const RegistroComida = ({ nuevoRegistro }) => {
           <div className="mb-3">
             <label htmlFor="select" className="form-label">Pais</label>
             <select id="select" className="form-select" onChange={(e) => setIdAlimento(e.target.value)}>
-              <option>{alimentos.loading ? 'Cargando alimentos...' : 'Seleccione un Alimento'}</option>
+              <option value={0}>{alimentos.loading ? 'Cargando alimentos...' : 'Seleccione un Alimento'}</option>
               {
                 alimentos.alimentos.map(alimento => (
                   <option key={alimento.id} value={alimento.id}>{alimento.nombre}</option>
@@ -110,7 +112,7 @@ const RegistroComida = ({ nuevoRegistro }) => {
             <input type="date" id="inputFecha" className="form-control" placeholder="Calorias por dia" onChange={(e) => setFecha(e.target.value)} />
           </div>
           {/* Validamos que se puede submitear cuando se cumplan con los requisitos del disabled */}
-          <button className="btn btn-success" type='submit'>{loading?'Registrando comida...': 'Registrar comida'}</button>
+          <button className="btn btn-success" disabled={idAlimento<=0 || cantidad<=0} type='submit'>{loading?'Registrando comida...': 'Registrar comida'}</button>
         </form>
         {error &&(
           <div className='alert alert-danger' style={{ marginTop: '20px'}} role='alert'>{error}</div>

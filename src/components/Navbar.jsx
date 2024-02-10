@@ -2,7 +2,6 @@ import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { CgLogIn } from "react-icons/cg";
 import { CiHome } from "react-icons/ci";
-import { MdFastfood } from "react-icons/md";
 import { CiCircleList } from "react-icons/ci";
 
 const Navbar = () => {

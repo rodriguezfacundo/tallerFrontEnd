@@ -3,7 +3,8 @@ import userReducer from './UserSlice';
 import registerReducer from './RegisterSlice';
 import registerComida from './RegisterComidaSlice';
 import obtenerAlimentos from './ObtenerAlimentosSlice';
-import ObtenerRegistrosComidas from "../Store/ObtenerRegistrosComidasSlice";
+import ObtenerRegistrosComidas from "./ObtenerRegistrosComidasSlice";
+import eliminarRegistro from "./EliminarRegistroSlice";
 
 const store = configureStore({
     reducer:{
@@ -12,6 +13,7 @@ const store = configureStore({
         registerComida: registerComida,
         alimentos: obtenerAlimentos,
         registros: ObtenerRegistrosComidas,
+        eliminarRegistro: eliminarRegistro,
     }
 });
 export default store;
