@@ -1,6 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import axios from 'axios';
-import {show_alert} from '../functions';
 import { useNavigate } from 'react-router-dom';
 import { UseDispatch, useDispatch, useSelector } from 'react-redux';
 import {loginUser} from '../Store/UserSlice';
@@ -9,7 +7,6 @@ export const Login = () => {
 
     const [usuario, setUsuario] = useState('');
     const [password, setPassword] = useState('');
-    const [redirect, setRedirect] = useState(false);
 
     //Redux state
     const {loading, error} = useSelector((state)=> state.user);
@@ -34,11 +31,6 @@ export const Login = () => {
         })
 
       }
-
-    //Condicional para luego de logueado llevar al usuario al inicio
-    if (redirect) {
-        return navigate("/inicio");
-    }
 
   return (
     <div className='container' style={{ maxWidth: '400px', margin: 'auto', background: '#100e10', color: '#fff', padding: '20px', borderRadius: '10px', marginTop: '50px' }}>

@@ -87,42 +87,6 @@ const RegistroComida = ({ nuevoRegistro }) => {
       show_alert('La fecha debe ser hoy o anterior.', 'warning');
       return;
     }
-
-    try {
-      if (apiKey !== '' && (idUsuario !== '' || idUsuario !== 0)) {
-        const respuesta = await axios.post(
-          'https://calcount.develotion.com/registros.php',
-          {
-            idAlimento,
-            idUsuario,
-            cantidad,
-            fecha,
-          },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              'apikey': apiKey,
-              'idUser': idUsuario,
-            },
-          }
-        );
-        console.log(respuesta.data);
-        if (respuesta.status === 200) {
-          nuevoRegistro();
-          show_alert('Tu nuevo registro se ha realizado con éxito', 'success');
-
-        }
-      }
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        show_alert('Credenciales inválidas', 'warning');
-        console.log(error);
-
-      } else {
-        show_alert('Error al registrar comida. Inténtelo de nuevo más tarde.', 'warning');
-        console.log(error);
-      }
-    }
   };
 
   return (

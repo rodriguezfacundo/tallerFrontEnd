@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { show_alert } from '../functions';
 import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom';
+import { UseDispatch, useDispatch, useSelector } from 'react-redux';
+import {userRegister} from '../Store/RegisterSlice';
+
 
 
 const RegistroUsuario = () => {
-  const navigate = useNavigate();
-
 
   //Creamos los states que se usaran luego
   const [paises, setPaises] = useState([]);
@@ -15,7 +15,11 @@ const RegistroUsuario = () => {
   const [password, setPassword] = useState('');
   const [idPais, setIdPais] = useState('');
   const [calorias, setCalorias] = useState('');
-  const [redirect, setRedirect] = useState(false);
+
+  //Redux state
+  const {loading, error} = useSelector((state)=> state.register);
+  
+
 
   //Obtenemos paises para luego mostrar en el select (luego hay que cambiarlo a un componente de tipo Paises)
   const getPaises = async () => {
@@ -29,56 +33,35 @@ const RegistroUsuario = () => {
     getPaises();
   }, []);
 
-  //Se hace el POST a la api pasando todos los valores ya validados
-  const registrarUsuario = async (e) => {
-    e.preventDefault()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-    //Puse un timeout de 20 segundos pero seguramente lo bajemos
-    //Use axios que es tipo el fetch, no es muy distinto pero estuve investigando y se usa bastante mas que el fetch
-    //Basicamente te permite interactuar con la API
-    try {
-      console.log('datos a enviar', usuario, password, idPais, calorias);
-      const respuesta = await axios.post('https://calcount.develotion.com/usuarios.php', {
-        usuario,
-        password,
-        idPais,
-        calorias
-      }, { timeout: 20000 }
-      );
-      //Mostramos la data recibida de la API con el registro, y en caso de que sea exitoso avisamos con un alert
-      console.log(respuesta.data);
-      if (respuesta.status === 200) {
-        localStorage.setItem('apiKey', respuesta.data.apiKey);
-        localStorage.setItem('idUsuario', respuesta.data.id);
-        show_alert('Registrado con éxito', 'success');
-        setRedirect(true);
-      }
-    } catch (error) {
-      //Validamos que el error tenga respuesta y si el status es 409 es porque ya se registro
-      if (error.response && error.response.status === 409) {
-        show_alert('El usuario ya existe. Por favor, elija otro nombre de usuario.', 'warning');
+  const registrar = (e) => {
+    e.preventDefault();
 
-      } else {
-        //Este alert queda para avisar al usuario que no se pudo registrar, y en el console log tenemos el error para verlo y corregirlo
-        show_alert('Error al registrar usuario. Inténtelo de nuevo más tarde.', 'warning');
-        console.log(error);
+    let userRegisterCredenciales = {
+      usuario, password, idPais, calorias
+    };
+
+    dispatch(userRegister(userRegisterCredenciales)).then((result) =>{
+      if(result.payload){
+        setUsuario('');
+        setPassword('');
+        setIdPais('');
+        setCalorias('');
+        navigate('/inicio')
       }
-    }
+    })
 
   }
 
-  //Condicional para luego de logueado llevar al usuario al inicio
-  if (redirect) {
-    return navigate('/inicio');
-  }
 
   return (
-    <>
       <div className='container' style={{ maxWidth: '400px', margin: 'auto', background: '#100e10', color: '#fff', padding: '20px', borderRadius: '10px', marginTop: '50px' }}>
         <h1 className='text-center'>Registro Usuario</h1>
         {/* Llamamos a la funcion de registrarUsuario cuando se hace submit al formulario */}
         {/* En cada input cada vez que se escucha el evento onChange vamos seteandolo a sus states */}
-        <form onSubmit={registrarUsuario}>
+        <form onSubmit={registrar}>
           <div className="mb-3">
             <label htmlFor="inputUsuario" className="form-label">Usuario</label>
             <input type="text" id="inputUsuario" className="form-control" placeholder="Usuario" onChange={(e) => setUsuario(e.target.value)} />
@@ -105,12 +88,12 @@ const RegistroUsuario = () => {
             <Link to='/login' style={{ color: 'white' }}>Ya estoy registrado</Link>
           </div>
           {/* Validamos que se puede submitear cuando se cumplan con los requisitos del disabled */}
-          <button className="btn btn-success" type='submit' disabled={usuario.length < 5 || password.length < 5 || calorias <= 0 || idPais <= 0}>Enviar</button>
+          <button className="btn btn-success" type='submit' disabled={usuario.length < 5 || password.length < 5 || calorias <= 0 || idPais <= 0}>{loading?'Registrando...':'Registrar'}</button>
         </form>
-
+        {error &&(
+          <div className='alert alert-danger' style={{ marginTop: '20px'}} role='alert'>{error}</div>
+        )}
       </div>
-    </>
-
   )
 }
 
