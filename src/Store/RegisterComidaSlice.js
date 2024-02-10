@@ -3,20 +3,21 @@ import axios from 'axios';
 
 export const comidaRegister = createAsyncThunk(
     'comida/comidaRegister',
-    async(idAlimento, idUsuario, cantidad, fecha, apiKey) =>{
+    async(credenciales) =>{
+        console.log('data que llega al post', credenciales)
         const request = await axios.post(
             'https://calcount.develotion.com/registros.php',
             {
-              idAlimento,
-              idUsuario,
-              cantidad,
-              fecha,
+              'idAlimento':credenciales.idAlimento,
+              'idUsuario': credenciales.idUsuario,
+              'cantidad': credenciales.cantidad,
+              'fecha': credenciales.fecha,
             },
             {
               headers: {
                 'Content-Type': 'application/json',
-                'apikey': apiKey,
-                'idUser': idUsuario,
+                'apikey': credenciales.apiKey,
+                'iduser': credenciales.idUsuario,
               },
             }
           );
@@ -31,26 +32,26 @@ const comidaRegisterSlice = createSlice({
     name: 'comidaRegister',
     initialState:{
         loading: false,
-        user: null,
+        comida: null,
         error: null
     },
     extraReducers: (builder) => {
         builder
             .addCase(comidaRegister.pending, (state)=>{
                 state.loading = true;
-                state.user = null;
+                state.comida = null;
                 state.error = null;
             })
             .addCase(comidaRegister.fulfilled,(state, action) =>{
                 state.loading = false;
-                state.user = action.payload;
+                state.comida = action.payload;
                 state.error = null;
             })
             .addCase(comidaRegister.rejected, (state, action)=>{
                 state.loading = false;
-                state.user = null;
-                if(action.error.message === 'Request failed with status code 409'){
-                    state.error = "Ya te encuentras registrado";
+                state.comida = null;
+                if(action.error.message === 'Request failed with status code 401'){
+                    state.error = "API Key o usuario inválido";
                     console.log(state.error)
                 } else {
                     state.error = action.error.message;

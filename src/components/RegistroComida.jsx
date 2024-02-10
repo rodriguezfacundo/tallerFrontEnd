@@ -2,42 +2,25 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { show_alert } from '../functions';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import {comidaRegister} from '../Store/RegisterComidaSlice';
+import {obtenerAlimentos} from '../Store/ObtenerAlimentosSlice';
+
 
 const RegistroComida = ({ nuevoRegistro }) => {
   const apiKey = localStorage.getItem('apiKey');
   const idUsuario = localStorage.getItem('idUsuario');
 
-  const navigate = useNavigate();
 
-  const [alimentos, setAlimentos] = useState([]);
+  const {loading, error} = useSelector((state)=> state.registerComida);
+  const alimentos = useSelector((state) => state.alimentos);
+
   const [idAlimento, setIdAlimento] = useState('');
   const [cantidad, setCantidad] = useState('');
   const [fecha, setFecha] = useState('');
 
-
-  const getAlimentos = async () => {
-    try {
-      if (apiKey !== '' && (idUsuario !== '' || idUsuario !== 0)) {
-        console.log('entro al get Alimentos');
-        console.log('apiKey antes de hacer la llamada get a alimentos', apiKey);
-        console.log('userId antes de hacer la llamada get a alimentos', idUsuario);
-
-        const respuesta = await axios.get('https://calcount.develotion.com/alimentos.php', {
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': apiKey,
-            'idUser': idUsuario
-          }
-        });
-        console.log(respuesta.data.alimentos);
-        if (respuesta.status === 200) {
-          setAlimentos(respuesta.data.alimentos);
-        }
-      }
-    } catch (error) {
-      console.log('catch error', error)
-    }
-  }
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
 
   //Funcion que valida que la fecha ingresada sea HOY, o un dia antes que HOY
@@ -75,9 +58,10 @@ const RegistroComida = ({ nuevoRegistro }) => {
   useEffect(() => {
     const isValid = validarLogin(apiKey);
     if (isValid) {
-      getAlimentos();
+      let credenciales = {apiKey, idUsuario}
+      dispatch(obtenerAlimentos(credenciales));
     }
-  }, [apiKey, idUsuario, navigate]);
+  }, [apiKey, idUsuario]);
 
 
   const registrarComida = async (e) => {
@@ -85,8 +69,20 @@ const RegistroComida = ({ nuevoRegistro }) => {
 
     if (!validarFecha()) {
       show_alert('La fecha debe ser hoy o anterior.', 'warning');
-      return;
+      return
     }
+
+    let credenciales = {idAlimento, idUsuario, cantidad, fecha,apiKey };
+    console.log('credenciales antes de dispatch', credenciales);
+    dispatch(comidaRegister(credenciales)).then((result) =>{
+      if(result.payload){
+        setCantidad('');
+        setFecha('');
+        setIdAlimento('');
+        show_alert('Comida registrada con exito', 'success')
+        
+      }
+    })
   };
 
   return (
@@ -97,9 +93,9 @@ const RegistroComida = ({ nuevoRegistro }) => {
           <div className="mb-3">
             <label htmlFor="select" className="form-label">Pais</label>
             <select id="select" className="form-select" onChange={(e) => setIdAlimento(e.target.value)}>
-              <option>Alimentos</option>
+              <option>{alimentos.loading ? 'Cargando alimentos...' : 'Seleccione un Alimento'}</option>
               {
-                alimentos.map(alimento => (
+                alimentos.alimentos.map(alimento => (
                   <option key={alimento.id} value={alimento.id}>{alimento.nombre}</option>
                 ))
               }
@@ -114,8 +110,11 @@ const RegistroComida = ({ nuevoRegistro }) => {
             <input type="date" id="inputFecha" className="form-control" placeholder="Calorias por dia" onChange={(e) => setFecha(e.target.value)} />
           </div>
           {/* Validamos que se puede submitear cuando se cumplan con los requisitos del disabled */}
-          <button className="btn btn-success" type='submit'>Registrar</button>
+          <button className="btn btn-success" type='submit'>{loading?'Registrando comida...': 'Registrar comida'}</button>
         </form>
+        {error &&(
+          <div className='alert alert-danger' style={{ marginTop: '20px'}} role='alert'>{error}</div>
+        )}
       </div>
 
     </>

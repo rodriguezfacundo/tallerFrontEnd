@@ -2,48 +2,26 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { show_alert } from '../functions';
 import { BsTrash } from 'react-icons/bs';
+import { useDispatch, useSelector } from 'react-redux';
+import {obtenerAlimentos} from '../Store/ObtenerAlimentosSlice';
+import { obtenerRegistrosComida } from '../Store/ObtenerRegistrosComidasSlice';
+
+
 
 const ObtenerRegistrosComidas = ({ reload }) => {
-  const [listaDeComidas, setListaDeComidas] = useState([]);
-  const [alimentos, setAlimentos] = useState([]);
+  //const [listaDeComidas, setListaDeComidas] = useState([]);
+  //const [alimentos, setAlimentos] = useState([]);
   const idUsuario = localStorage.getItem('idUsuario');
   const apiKey = localStorage.getItem('apiKey');
-  const headers = {
-    'content-type': 'application/json',
-    'apiKey': apiKey,
-    'idUser': idUsuario,
-  };
 
-  const getAlimentosRegistrados = async () => {
-    try {
-      const respuesta = await axios.get(`https://calcount.develotion.com/registros.php?idUsuario=${idUsuario}`, {
-        headers: headers,
-      });
-      console.log('respuesta', respuesta)
-      setListaDeComidas(respuesta.data.registros);
-    } catch (error) {
-      console.error('Error fetching alimentos registrados:', error);
-    }
-  };
+  const alimentos = useSelector((state) => state.alimentos);
+  const registros = useSelector((state) => state.registros);
+  const dispatch = useDispatch();
 
-  const getAlimentos = async () => {
-    try {
-      if (apiKey !== '' && (idUsuario !== '' || idUsuario !== 0)) {
-        const respuesta = await axios.get('https://calcount.develotion.com/alimentos.php', {
-          headers: headers
-        });
-        console.log(respuesta.data.alimentos);
-        if (respuesta.status === 200) {
-          setAlimentos(respuesta.data.alimentos);
-        }
-      }
-    } catch (error) {
-      console.log('catch error', error)
-    }
-  }
+  let credenciales = {apiKey, idUsuario};
 
   const findAlimentoNameById = (id) => {
-    const buscado = alimentos.find(item => item.id === id);
+    const buscado = alimentos.alimentos.find(item => item.id === id);
     return buscado ? buscado.nombre : 'Nombre de Alimento N/A';
   };
 
@@ -51,30 +29,31 @@ const ObtenerRegistrosComidas = ({ reload }) => {
     try {
       if (apiKey !== '' && (idUsuario !== '' || idUsuario !== 0)) {
         const respuesta = await axios.delete(`https://calcount.develotion.com/registros.php?idRegistro=${id}`, {
-          headers: headers
+          headers: {
+              'Content-Type': 'application/json',
+                'apikey': credenciales.apiKey,
+                'iduser': credenciales.idUsuario,
+          }
         });
         if (respuesta.status === 200) {
           show_alert('Se ha Eliminado el registro', 'success');
-          setListaDeComidas((prevLista) => prevLista.filter(item => item.id !== id));
         }
       }
     } catch (error) {
-      console.log('catch error', error)
+      //console.log('catch error', error)
       show_alert('Error al eliminar el registro', 'error');
     }
   }
 
   useEffect(() => {
-    if (reload) {
-      console.log('valor de reload', reload);
-    }
-    getAlimentos()
-    getAlimentosRegistrados();
-  }, [reload]);
+    dispatch(obtenerAlimentos(credenciales));
+    dispatch(obtenerRegistrosComida(credenciales));
+  }, []);
 
   return (
     <div>
-      {listaDeComidas.length > 0 ? (
+      <h4>{registros.loading ? "Cargando registros... " : 'Registros'}</h4>
+      {registros.registros.length > 0 ? (
         <table className="table table-dark">
           <thead>
             <tr>
@@ -87,7 +66,7 @@ const ObtenerRegistrosComidas = ({ reload }) => {
             </tr>
           </thead>
           <tbody>
-            {listaDeComidas.map((comidas, index) => (
+            {registros.registros.map((comidas, index) => (
               <tr key={index}>
                 <th scope="row">{index + 1}</th>
                 <td>{findAlimentoNameById(comidas.idAlimento)}</td>
