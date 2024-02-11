@@ -1,16 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect} from 'react';
 import { show_alert } from '../functions';
 import { BsTrash } from 'react-icons/bs';
 import { useDispatch, useSelector } from 'react-redux';
 import {obtenerAlimentos} from '../Store/ObtenerAlimentosSlice';
 import { obtenerRegistrosComida } from '../Store/ObtenerRegistrosComidasSlice';
 import { eliminarRegistro } from '../Store/EliminarRegistroSlice';
-import { useNavigate } from 'react-router-dom';
 
 
 
 
-const ObtenerRegistrosComidas = ({ reload }) => {
+const ObtenerRegistrosComidas = () => {
   const idUsuario = localStorage.getItem('idUsuario');
   const apiKey = localStorage.getItem('apiKey');
 
