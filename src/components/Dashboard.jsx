@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import RegistroComida from './RegistroComida'
 import ObtenerRegistros from './ObtenerRegistros'
 import RegistrosPorFiltros from './RegistrosPorFiltros'
+import InfoCalorias from './InfoCalorias'
+
 
 const Dashboard = () => {
     const [reloadList, setReloadList] = useState(false)
@@ -23,6 +25,9 @@ const Dashboard = () => {
                 </div>
                 <div style={{ maxWidth: '600px', margin: '20px', boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.1)', borderRadius: '10px', backgroundColor:'0px 0px 5px rgba(14, 1, 35, 0.1)'}}>
                     <ObtenerRegistros reload={reloadList} />
+                </div>
+                <div style={{ maxWidth: '600px', margin: '20px', boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.1)', borderRadius: '10px' }}>
+                    <InfoCalorias reload={reloadList} />
                 </div>
                 <div id="carouselExample" className="carousel slide" style={{ maxWidth: '1000px', margin: 'auto',marginTop: '50px' }}>
                     <div className="carousel-inner">
