@@ -3,6 +3,10 @@ import RegistroComida from './RegistroComida'
 import ObtenerRegistros from './ObtenerRegistros'
 import RegistrosPorFiltros from './RegistrosPorFiltros'
 import InfoCalorias from './InfoCalorias'
+import DashGraficos from './DashGraficos'
+import MapaUsuarios from './MapaUsuarios'
+import DiasRestantes from './DiasRestantes'
+
 
 
 const Dashboard = () => {
@@ -18,8 +22,9 @@ const Dashboard = () => {
         setReloadList(!reloadList)
     }
     return (
+        
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <h2 style={{ marginTop: '20px', marginBottom: '10px' }}>¡Bienvenido a tu Dashboard!</h2>
+                <h1 style={{ marginTop: '20px', marginBottom: '10px' }}>¡Bienvenido!</h1>
                 <div>
                     <RegistroComida nuevoRegistro={nuevoRegistro} />
                 </div>
@@ -49,6 +54,15 @@ const Dashboard = () => {
             </div>
             <div>
                 <RegistrosPorFiltros/>
+            </div>
+            <div>
+                <DashGraficos />
+            </div>
+            <div>
+                <DiasRestantes />
+            </div>
+            <div>
+                <MapaUsuarios />
             </div>
         </div>
     );
