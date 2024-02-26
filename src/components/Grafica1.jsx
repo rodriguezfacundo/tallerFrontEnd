@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 const Grafica1 = () => {
 
   const alimentosReg = useSelector((state) => state.registros.registros);
+  const alimentos = useSelector((state) => state.alimentos.alimentos);
 
   const callback = (acc, ali) => {
     if (acc[ali.idAlimento]) {
@@ -17,7 +18,11 @@ const Grafica1 = () => {
 
   const datos = alimentosReg.reduce(callback, {})
   const ejey = Object.values(datos)
-  const ejex = Object.keys(datos)
+  const ejex = Object.keys(datos).map(idDato => {
+    // eslint-disable-next-line eqeqeq
+    const alimento = alimentos.find(a => a.id == idDato);
+    return alimento ? alimento.nombre : '';
+  });
 
 
   const options = {

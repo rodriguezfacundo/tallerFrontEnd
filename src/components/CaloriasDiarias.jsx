@@ -1,21 +1,36 @@
-import React from 'react'
+import { React } from 'react';
+
 
 const CaloriasDiarias = ({ diarias }) => {
 
+    const color = (diarias, objetivo) => {
+
+        const diariasNum = parseInt(diarias);
+        const objetivoNum = parseInt(objetivo);
+
+        const porcentajeConsumido = (100 * diariasNum) / objetivoNum
+
+        if (porcentajeConsumido < 10) {
+            return 'text-success';
+        } else if (porcentajeConsumido > 100) {
+            return 'text-danger';
+        } else {
+            return 'text-warning';
+        }
+    }
 
     return (
         <>
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title">Calorias Diaras</h5>
+            <div className="card">
+                <div className="card-header">
+                    <h5 className="card-title">Calorias Diarias</h5>
                 </div>
-                <div class="card-body">
-                    <h1 class="card-text">{`${diarias}`}</h1>
+                <div className={`card-body ${color(diarias, localStorage.getItem('caloriasDiarias'))}`}>
+                    <h1 className="card-text">{`${diarias}`}</h1>
                 </div>
             </div>
         </>
-
-    )
+    );
 }
 
-export default CaloriasDiarias
+export default CaloriasDiarias;

@@ -1,27 +1,31 @@
-import React, { useEffect} from 'react';
+import React, { useEffect, useState } from 'react';
 import { show_alert } from '../functions';
-import { BsTrash } from 'react-icons/bs';
 import { useDispatch, useSelector } from 'react-redux';
-import {obtenerAlimentos} from '../Store/ObtenerAlimentosSlice';
+import { obtenerAlimentos } from '../Store/ObtenerAlimentosSlice';
 import { obtenerRegistrosComida } from '../Store/ObtenerRegistrosComidasSlice';
 import { eliminarRegistro } from '../Store/EliminarRegistroSlice';
+import Tabla from './Tabla';
 
-
-
-
-const ObtenerRegistrosComidas = () => {
+const ObtenerRegistrosComidas = ({ nuevoRegistro }) => {
   const idUsuario = localStorage.getItem('idUsuario');
   const apiKey = localStorage.getItem('apiKey');
 
-
   const alimentos = useSelector((state) => state.alimentos);
-  const registros = useSelector((state) => state.registros);
+  const registros = useSelector((state) => state.registros.registros);
   const eliminado = useSelector((state) => state.eliminarRegistro)
   const dispatch = useDispatch();
+  const [filtroSelect, setFiltroSelect] = useState(0);
+  const [lista, setLista] = useState([]);
 
-  let imgComida = "https://calcount.develotion.com/imgs/"
+  let credenciales = { apiKey, idUsuario };
 
-  let credenciales = {apiKey, idUsuario};
+  useEffect(() => {
+
+    dispatch(obtenerAlimentos(credenciales));
+    dispatch(obtenerRegistrosComida(credenciales));
+    Filtro(filtroSelect)
+  }, [eliminado, filtroSelect, nuevoRegistro]);
+  console.log('lista', lista)
 
   const findAlimentoNameById = (id) => {
     const buscado = alimentos.alimentos.find(item => item.id === id);
@@ -30,62 +34,70 @@ const ObtenerRegistrosComidas = () => {
 
   const handleEliminar = async (idRegistro) => {
     try {
-      if (apiKey !== '' && (idUsuario !== '' || idUsuario !== 0)) {
-        const credencialesEliminar = {apiKey, idUsuario, idRegistro}
-        dispatch(eliminarRegistro(credencialesEliminar)).then((result) =>{
-          if(result.payload.codigo){
-            show_alert(result.payload.mensaje, 'success');
-            dispatch(obtenerRegistrosComida(credenciales));
-          }
-        })
+      if (apiKey && idUsuario) {
+        const credencialesEliminar = { apiKey, idUsuario, idRegistro };
+        const result = await dispatch(eliminarRegistro(credencialesEliminar));
+
+        if (result.payload.codigo) {
+          show_alert(result.payload.mensaje, 'success');
+        }
       }
     } catch (error) {
-      show_alert('Error al eliminar el registro', 'error');
+      show_alert('Error al eliminar el registro', error);
     }
-  }
+  };
 
-  useEffect(() => {
-    dispatch(obtenerAlimentos(credenciales));
-    dispatch(obtenerRegistrosComida(credenciales));
-  }, []);
+
+
+  const registrosUltimaSemana = async () => {
+    const unaSemanaEnMS = 7 * 24 * 60 * 60 * 1000;
+    const hoy = new Date();
+    const registrosAux = await dispatch(obtenerRegistrosComida(credenciales))
+
+    const registrosUltimaSemana = registrosAux.payload.filter(registro => {
+      const fechaRegistro = new Date(registro.fecha);
+      return (hoy - fechaRegistro) < unaSemanaEnMS;
+    });
+    setLista(registrosUltimaSemana);
+  };
+
+  const registrosUltimoMes = async () => {
+    const registrosAux = await dispatch(obtenerRegistrosComida(credenciales))
+    const hoy = new Date();
+    const mesAnterior = new Date(hoy.getFullYear(), hoy.getMonth() - 1, hoy.getDate());
+    const registrosUltimoMes = registrosAux.payload.filter(registro => {
+      const fechaRegistro = new Date(registro.fecha);
+      return fechaRegistro > mesAnterior;
+    });
+    setLista(registrosUltimoMes);
+  };
+
+
+  const Filtro = async (e) => {
+    setFiltroSelect(e)
+    if (e === '1') {
+      registrosUltimoMes()
+    } else if (e === '2') {
+      registrosUltimaSemana()
+    } else {
+      const registrosAux = await dispatch(obtenerRegistrosComida(credenciales))
+      
+      setLista(registrosAux.payload)
+    };
+  }
 
   return (
     <div>
-      <h4>{registros.loading ? "Cargando registros... " : 'Registros'}</h4>
-      {registros.registros.length > 0 ? (
-        <table className="table table-dark rounded">
-          <thead>
-            <tr>
-              <th scope="col"></th>
-              <th scope="col">#</th>
-              <th scope="col">Alimento</th>
-              <th scope="col">Cant</th>
-              <th scope="col">Fecha</th>
-              <th scope="col">Eliminar</th>
-
-            </tr>
-          </thead>
-          <tbody>
-            {registros.registros.map((registro, index) => (
-              <tr key={index}>
-                <th scope="row">{index + 1}</th>
-                <td><img src={imgComida + registro.idAlimento + '.png'} alt="Icono comida" /></td>
-                <td>{findAlimentoNameById(registro.idAlimento)}</td>
-                <td>{registro.cantidad}</td>
-                <td>{registro.fecha}</td>
-                <td>
-                  {
-                      eliminado.loading ? 'Eliminando...' : 
-                      <button className="btn btn-danger" onClick={() => handleEliminar(registro.id)}><BsTrash /></button>
-                  }
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p>No hay alimentos registrados.</p>
-      )}
+      <h6>
+        {registros.loading ? "Cargando registros..." :
+          <select name="filtro" id="filtro" onChange={(e) => Filtro(e.target.value)}>
+            <option value="0">Registros historicos</option>
+            <option value="1">Ultimo Mes</option>
+            <option value="2">Ultima Semana</option>
+          </select>
+        }
+      </h6>
+      <Tabla filtro={Filtro} handleEliminar={handleEliminar} findAlimentoNameById={findAlimentoNameById} lista={lista}></Tabla>
     </div>
   );
 };

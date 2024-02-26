@@ -1,31 +1,48 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const DiasRestantes = () => {
-  const calcularDiasRestantes = () => {
-    // Fecha límite (31 de marzo de 2024)
+  const [tiempoRestante, setTiempoRestante] = useState({
+    dias: 0,
+    horas: 0,
+    minutos: 0,
+    segundos: 0
+  });
+
+  const calcularTiempoRestante = () => {
     const deadline = new Date('2024-03-31T23:59:59');
     const now = new Date();
 
-    const differenceInMs = deadline - now;
+    const diferenciaEnMs = deadline - now;
 
-    const diasRestantes = Math.floor(differenceInMs / (1000 * 60 * 60 * 24));
+    const diasRestantes = Math.floor(diferenciaEnMs / (1000 * 60 * 60 * 24));
+    const horasRestantes = Math.floor((diferenciaEnMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutosRestantes = Math.floor((diferenciaEnMs % (1000 * 60 * 60)) / (1000 * 60));
+    const segundosRestantes = Math.floor((diferenciaEnMs % (1000 * 60)) / 1000);
 
-    return diasRestantes;
+    return {
+      dias: diasRestantes,
+      horas: horasRestantes,
+      minutos: minutosRestantes,
+      segundos: segundosRestantes
+    };
   };
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      console.log('Dias restantes:', calcularDiasRestantes());
+      const tiempo = calcularTiempoRestante();
+      setTiempoRestante(tiempo);
+      //console.log('Dias restantes:', tiempo);
     }, 1000);
 
     return () => clearInterval(intervalId);
   }, []);
 
   return (
-    <div>
-        <hr></hr>
-        <h4>Dias restantes para el 31 de Marzo del 2024</h4>
-        <p>{calcularDiasRestantes()} días</p>
+    <div className="card" style={{ maxWidth: '300px' }}>
+      <div className="card-body">
+        <h6 className="card-title">Tiempo Restante</h6>
+        <p className="card-text">{tiempoRestante.dias} días, {tiempoRestante.horas} horas, {tiempoRestante.minutos} minutos, {tiempoRestante.segundos} segundos</p>
+      </div>
     </div>
   );
 };

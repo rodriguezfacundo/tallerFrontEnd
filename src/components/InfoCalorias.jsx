@@ -7,12 +7,12 @@ const InfoCalorias = () => {
     const alimentos = useSelector((state) => state.alimentos.alimentos);
     const registros = useSelector((state) => state.registros.registros);
 
-    const caloriasTot = () => {
+    const CaloriasTot = () => {
         let sumaCalorias = 0;
         registros.map((registro) => {
             alimentos.map((alimento) => {
                 if (registro.idAlimento === alimento.id) {
-                    sumaCalorias += alimento.calorias
+                    sumaCalorias += alimento.calorias * registro.cantidad
                 }
             });
         });
@@ -31,7 +31,8 @@ const InfoCalorias = () => {
         registros.map((registro) => {
             alimentos.map((alimento) => {
                 if (registro.idAlimento === alimento.id && registro.fecha === hoy) {
-                    sumaCalorias += alimento.calorias
+                    sumaCalorias += (alimento.calorias * registro.cantidad)
+                    console.log('sumaCal', sumaCalorias)
                 }
             });
         });
@@ -41,7 +42,7 @@ const InfoCalorias = () => {
 
     return (
         <>
-            <CaloriasTotales totales={caloriasTot()}></CaloriasTotales>
+            <CaloriasTotales totales={CaloriasTot()}></CaloriasTotales>
             <CaloriasDiarias diarias={CaloriasDia()}></CaloriasDiarias>
         </>
     )

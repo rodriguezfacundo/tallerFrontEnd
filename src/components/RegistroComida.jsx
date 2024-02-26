@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { show_alert } from '../functions';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import {comidaRegister} from '../Store/RegisterComidaSlice';
-import {obtenerAlimentos} from '../Store/ObtenerAlimentosSlice';
+import { comidaRegister } from '../Store/RegisterComidaSlice';
+import { obtenerAlimentos } from '../Store/ObtenerAlimentosSlice';
 import { obtenerRegistrosComida } from '../Store/ObtenerRegistrosComidasSlice';
 
 
@@ -12,16 +12,14 @@ const RegistroComida = ({ nuevoRegistro }) => {
   const idUsuario = localStorage.getItem('idUsuario');
 
 
-  const {loading, error} = useSelector((state)=> state.registerComida);
-  const alimentos = useSelector((state) => state.alimentos);
-
+  const { loading, error } = useSelector((state) => state.registerComida);
+  const alimentos = useSelector((state) => state.alimentos.alimentos);
   const [idAlimento, setIdAlimento] = useState('');
   const [cantidad, setCantidad] = useState('');
   const [fecha, setFecha] = useState('');
-
+  const [unidad, setUnidad] = useState('')
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
 
   //Funcion que valida que la fecha ingresada sea HOY, o un dia antes que HOY
   const validarFecha = () => {
@@ -58,11 +56,26 @@ const RegistroComida = ({ nuevoRegistro }) => {
   useEffect(() => {
     const isValid = validarLogin(apiKey);
     if (isValid) {
-      let credenciales = {apiKey, idUsuario}
+      let credenciales = { apiKey, idUsuario }
       dispatch(obtenerAlimentos(credenciales));
     }
   }, [apiKey, idUsuario]);
 
+  const PorcionCantidad = (idAlimento, cantidad) => {
+    const alimento = alimentos.find(a => a.id == idAlimento);
+    const porcion = alimento.porcion
+    const soloNumeros = porcion.replace(/[^0-9]/g, '');
+    const valorNumerico = parseInt(soloNumeros, 10);
+    return (cantidad / valorNumerico)
+  }
+
+  const handleChangeAlimento = (e) => {
+    const alimento = alimentos.find(a => a.id === parseInt(e))
+    const unidadAux = (alimento !== undefined) ? alimento.porcion.slice(-1) : '';
+    const unidadFinal = (unidadAux === 'g') ? 'gramos' : (unidadAux === 'm') ? 'mililitros' : (unidadAux === 'u') ? 'unidad' : '';
+    setUnidad(unidadFinal)
+    setIdAlimento(e)
+  }
 
   const registrarComida = async (e) => {
     e.preventDefault()
@@ -72,52 +85,60 @@ const RegistroComida = ({ nuevoRegistro }) => {
       return
     }
 
-    let credenciales = {idAlimento, idUsuario, cantidad, fecha,apiKey };
-    console.log('credenciales antes de dispatch', credenciales);
-    dispatch(comidaRegister(credenciales)).then((result) =>{
-      if(result.payload){
+    PorcionCantidad(idAlimento, cantidad)
+
+    let credenciales = { idAlimento, idUsuario, cantidad, fecha, apiKey };
+    credenciales.cantidad = PorcionCantidad(idAlimento, cantidad) //se transforman las cantidades en porciones
+
+    dispatch(comidaRegister(credenciales)).then((result) => {
+      if (result.payload) {
+        e.target.reset();
         setCantidad('');
         setFecha('');
         setIdAlimento('');
+        nuevoRegistro();
         show_alert('Comida registrada con exito', 'success')
         dispatch(obtenerRegistrosComida(credenciales));
-        
       }
+
     })
   };
 
   return (
     <>
-      <div className='container' style={{ maxWidth: '400px', margin: 'auto', background: '#100e10', color: '#fff', padding: '20px', borderRadius: '10px', marginTop: '50px' }}>
-        <h1 className='text-center'>Registrar Comida</h1>
-        <form onSubmit={registrarComida}>
-          <div className="mb-3">
-            <label htmlFor="select" className="form-label">Pais</label>
-            <select id="select" className="form-select" onChange={(e) => setIdAlimento(e.target.value)}>
-              <option value={0}>{alimentos.loading ? 'Cargando alimentos...' : 'Seleccione un Alimento'}</option>
-              {
-                alimentos.alimentos.map(alimento => (
-                  <option key={alimento.id} value={alimento.id}>{alimento.nombre}</option>
-                ))
-              }
-            </select>
+      <div className="container mt-1">
+        <div className="card" style={{ maxWidth: '400px', margin: 'auto', borderRadius: '10px' }}>
+          <div className="card-body">
+            <h4 className="card-title text-center">Registrar Comida</h4>
+            <form onSubmit={registrarComida}>
+              <div className="mb-3">
+                <label htmlFor="select" className="form-label">Pais</label>
+                <select id="select" className="form-select" onChange={({ target: { value } }) => handleChangeAlimento(value)}>
+                  <option value={0}>{alimentos.loading ? 'Cargando alimentos...' : 'Seleccione un Alimento'}</option>
+                  {alimentos.map(alimento => (
+                    <option key={alimento.id} value={alimento.id}>{alimento.nombre}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="mb-3">
+                <label htmlFor="inputCantidad" className="form-label">Cantidad</label>
+                <div className="input-group">
+                  <input type="number" id="inputCantidad" className="form-control" placeholder="0" value={cantidad} onChange={({ target: { value } }) => setCantidad(value)} />
+                  <input className="form-control" value={unidad} readOnly />
+                </div>
+              </div>
+              <div className="mb-3">
+                <label htmlFor="inputFecha" className="form-label">Fecha</label>
+                <input type="date" id="inputFecha" className="form-control" placeholder="Calorias por dia" onChange={({ target: { value } }) => setFecha(value)} />
+              </div>
+              <button className="btn btn-success" disabled={idAlimento <= 0 || cantidad <= 0} type="submit">
+                {loading ? 'Registrando comida...' : 'Registrar comida'}
+              </button>
+            </form>
+            {error && <div className="alert alert-danger mt-3" role="alert">{error}</div>}
           </div>
-          <div className="mb-3">
-            <label htmlFor="inputCantidad" className="form-label">Cantidad</label>
-            <input type="number" id="inputCantidad" className="form-control" placeholder="0" onChange={(e) => setCantidad(e.target.value)} />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="inputFecha" className="form-label">Fecha</label>
-            <input type="date" id="inputFecha" className="form-control" placeholder="Calorias por dia" onChange={(e) => setFecha(e.target.value)} />
-          </div>
-          {/* Validamos que se puede submitear cuando se cumplan con los requisitos del disabled */}
-          <button className="btn btn-success" disabled={idAlimento<=0 || cantidad<=0} type='submit'>{loading?'Registrando comida...': 'Registrar comida'}</button>
-        </form>
-        {error &&(
-          <div className='alert alert-danger' style={{ marginTop: '20px'}} role='alert'>{error}</div>
-        )}
+        </div>
       </div>
-
     </>
   )
 }

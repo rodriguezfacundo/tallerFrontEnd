@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom';
-import { UseDispatch, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {userRegister} from '../Store/RegisterSlice';
 
 

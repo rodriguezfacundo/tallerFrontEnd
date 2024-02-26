@@ -28,12 +28,6 @@ const Navbar = () => {
                             <li className="nav-item">
                                 <Link className="nav-link" to='/inicio'><CiHome style={iconStyle} />Inicio</Link>
                             </li>
-                            {/*   <li className="nav-item">
-                                <Link className="nav-link" to='/registrarComida'><MdFastfood style={iconStyle} />Registrar Comida</Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link className="nav-link" to='/obtenerRegistros'><CiCircleList style={iconStyle} />Listar Registros</Link>
-                            </li> */}
                             <li className="nav-item">
                                 <Link className="nav-link" to='/dashboard'><CiCircleList style={iconStyle} />Dashboard</Link>
                             </li>
