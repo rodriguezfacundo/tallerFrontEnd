@@ -7,6 +7,13 @@ const Grafica1 = () => {
   const alimentosReg = useSelector((state) => state.registros.registros);
   const alimentos = useSelector((state) => state.alimentos.alimentos);
 
+  if (!alimentosReg || alimentosReg.length === 0 || !alimentosReg) {
+    return (<div className="card p-4">
+      <p className="lead">No hay datos disponibles para el gráfico.</p>
+    </div>);
+  }
+
+
   const callback = (acc, ali) => {
     if (acc[ali.idAlimento]) {
       acc[ali.idAlimento] = acc[ali.idAlimento] + 1;
@@ -19,15 +26,17 @@ const Grafica1 = () => {
   const datos = alimentosReg.reduce(callback, {})
   const ejey = Object.values(datos)
   const ejex = Object.keys(datos).map(idDato => {
-    // eslint-disable-next-line eqeqeq
-    const alimento = alimentos.find(a => a.id == idDato);
+    const alimento = alimentos.find(a => a.id === parseInt(idDato));
     return alimento ? alimento.nombre : '';
   });
 
 
   const options = {
     chart: {
-      type: 'bar'
+      type: 'bar',
+      toolbar: {
+        show: false,
+      },
     },
     xaxis: {
       categories: ejex
@@ -40,7 +49,14 @@ const Grafica1 = () => {
   }];
 
   return (
-    <ReactApexChart options={options} series={series} type="bar" height={350} />
+    <div className="container">
+      <div className="card">
+        <div className="card-header">Gráf cantidad de Alimentos</div>
+        <div className="card-body">
+          <ReactApexChart options={options} series={series} type="bar" height={275} />
+        </div>
+      </div>
+    </div>
   );
 };
 

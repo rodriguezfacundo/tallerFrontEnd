@@ -38,10 +38,10 @@ const Navbar = () => {
                 {localStorage.getItem('apiKey') ?
                     <>
                         <div>
-                            <button onClick={handleLogout} className="btn btn-danger">Logout</button>
+                            <button onClick={handleLogout} className="btn btn-danger me-3">Logout</button>
                         </div>
                     </>
-                    : <Link className="navbar-brand" to='/registroUsuario'><CgLogIn style={iconStyle} />Iniciar</Link>
+                    : <Link className="navbar-brand" to='/Login'><CgLogIn style={iconStyle} />Iniciar</Link>
                 }
 
 

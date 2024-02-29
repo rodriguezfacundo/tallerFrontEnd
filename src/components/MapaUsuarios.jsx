@@ -47,10 +47,12 @@ const MapaUsuarios = () => {
 
   return (
     <>
-      <h4>Cantidad de Usuarios</h4>
-      <div style={{ margin: '0 auto', height: '100px' }}>
-        <Mapa markersData={markersData} />
-      </div >
+      <div className="container">
+        <div className="card">
+          <div className='card-header'>Cantidad de Usuarios</div>
+          <Mapa markersData={markersData} />
+        </div>
+      </div>
     </>
   )
 }

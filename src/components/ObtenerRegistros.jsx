@@ -81,7 +81,7 @@ const ObtenerRegistrosComidas = ({ nuevoRegistro }) => {
       registrosUltimaSemana()
     } else {
       const registrosAux = await dispatch(obtenerRegistrosComida(credenciales))
-      
+
       setLista(registrosAux.payload)
     };
   }
@@ -90,7 +90,7 @@ const ObtenerRegistrosComidas = ({ nuevoRegistro }) => {
     <div>
       <h6>
         {registros.loading ? "Cargando registros..." :
-          <select name="filtro" id="filtro" onChange={(e) => Filtro(e.target.value)}>
+          <select className="form-select" name="filtro" id="filtro" onChange={(e) => Filtro(e.target.value)}>
             <option value="0">Registros historicos</option>
             <option value="1">Ultimo Mes</option>
             <option value="2">Ultima Semana</option>

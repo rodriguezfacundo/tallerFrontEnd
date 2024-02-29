@@ -3,12 +3,12 @@ import React from 'react'
 const CaloriasTotales = ({ totales }) => {
     return (
         <>
-            <div className="card">
-                <div className="card-header">
-                    <h5 className="card-title">Total de Calorías</h5>
+            <div className="card mt-2" >
+                <div className="card-header text-center ">
+                    <h5>Total de Calorías</h5>
                 </div>
-                <div className="card-body">
-                    <h1 className="card-text">{`${totales}`}</h1>
+                <div className="card-body text-center">
+                    <h3 className="card-text">{`${totales}`}</h3>
                 </div>
             </div>
         </>

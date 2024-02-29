@@ -8,7 +8,7 @@ const Inicio = () => {
     ];
 
     return (
-        <div id="carouselExample" className="carousel slide" style={{ maxWidth: '1000px', margin: 'auto', marginTop: '50px' }}>
+        <div id="carouselExample" className="carousel slide" style={{ maxWidth: '1000px', margin: 'auto' }}>
             <div className="carousel-inner">
                 {/* Recorro las imagenes con el map y las voy mostrando en el carousel */}
                 {imagenes.map((imagen, index) => (

@@ -26,7 +26,9 @@ const RegistroComida = ({ nuevoRegistro }) => {
     let isValid = false;
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
+
     console.log('hoy', hoy);
+    console.log('fecha', fecha)
 
     const fechaIngresada = new Date(fecha);
     fechaIngresada.setHours(0, 0, 0, 0);
@@ -61,14 +63,6 @@ const RegistroComida = ({ nuevoRegistro }) => {
     }
   }, [apiKey, idUsuario]);
 
-  const PorcionCantidad = (idAlimento, cantidad) => {
-    const alimento = alimentos.find(a => a.id == idAlimento);
-    const porcion = alimento.porcion
-    const soloNumeros = porcion.replace(/[^0-9]/g, '');
-    const valorNumerico = parseInt(soloNumeros, 10);
-    return (cantidad / valorNumerico)
-  }
-
   const handleChangeAlimento = (e) => {
     const alimento = alimentos.find(a => a.id === parseInt(e))
     const unidadAux = (alimento !== undefined) ? alimento.porcion.slice(-1) : '';
@@ -79,16 +73,14 @@ const RegistroComida = ({ nuevoRegistro }) => {
 
   const registrarComida = async (e) => {
     e.preventDefault()
-
     if (!validarFecha()) {
+
       show_alert('La fecha debe ser hoy o anterior.', 'warning');
+
       return
     }
 
-    PorcionCantidad(idAlimento, cantidad)
-
     let credenciales = { idAlimento, idUsuario, cantidad, fecha, apiKey };
-    credenciales.cantidad = PorcionCantidad(idAlimento, cantidad) //se transforman las cantidades en porciones
 
     dispatch(comidaRegister(credenciales)).then((result) => {
       if (result.payload) {
@@ -129,7 +121,7 @@ const RegistroComida = ({ nuevoRegistro }) => {
               </div>
               <div className="mb-3">
                 <label htmlFor="inputFecha" className="form-label">Fecha</label>
-                <input type="date" id="inputFecha" className="form-control" placeholder="Calorias por dia" onChange={({ target: { value } }) => setFecha(value)} />
+                <input type="date" id="inputFecha" className="form-control" placeholder="Calorias por dia" onSelect={({ target: { value } }) => setFecha(value)} />
               </div>
               <button className="btn btn-success" disabled={idAlimento <= 0 || cantidad <= 0} type="submit">
                 {loading ? 'Registrando comida...' : 'Registrar comida'}

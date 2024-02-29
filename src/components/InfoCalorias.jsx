@@ -7,16 +7,32 @@ const InfoCalorias = () => {
     const alimentos = useSelector((state) => state.alimentos.alimentos);
     const registros = useSelector((state) => state.registros.registros);
 
+    const CaloriasXCantidad = (idAlimento, cantidad) => {
+        const alimento = alimentos.find(a => a.id === idAlimento);
+
+        const porcionStr = alimento.porcion
+        const porcion = porcionStr.replace(/[^0-9]/g, '');
+
+        const porcionNum = parseInt(porcion, 10);
+
+        const retorno = (cantidad / porcionNum) * (alimento.calorias)
+        return retorno
+
+    }
+
+
     const CaloriasTot = () => {
         let sumaCalorias = 0;
         registros.map((registro) => {
             alimentos.map((alimento) => {
                 if (registro.idAlimento === alimento.id) {
-                    sumaCalorias += alimento.calorias * registro.cantidad
+                    sumaCalorias += CaloriasXCantidad(alimento.id, registro.cantidad)
                 }
             });
         });
-        return sumaCalorias;
+
+
+        return parseFloat(sumaCalorias.toFixed(0));
     }
 
     const CaloriasDia = () => {
@@ -31,12 +47,11 @@ const InfoCalorias = () => {
         registros.map((registro) => {
             alimentos.map((alimento) => {
                 if (registro.idAlimento === alimento.id && registro.fecha === hoy) {
-                    sumaCalorias += (alimento.calorias * registro.cantidad)
-                    console.log('sumaCal', sumaCalorias)
+                    sumaCalorias += CaloriasXCantidad(alimento.id, registro.cantidad)
                 }
             });
         });
-        return sumaCalorias;
+        return parseFloat(sumaCalorias.toFixed(0));
     }
 
 
@@ -46,6 +61,6 @@ const InfoCalorias = () => {
             <CaloriasDiarias diarias={CaloriasDia()}></CaloriasDiarias>
         </>
     )
-}
 
+}
 export default InfoCalorias;

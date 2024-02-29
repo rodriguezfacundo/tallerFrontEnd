@@ -11,22 +11,22 @@ const CaloriasDiarias = ({ diarias }) => {
         const porcentajeConsumido = (100 * diariasNum) / objetivoNum
 
         if (porcentajeConsumido < 10) {
-            return 'text-success';
+            return 'text-success text-center';
         } else if (porcentajeConsumido > 100) {
-            return 'text-danger';
+            return 'text-danger text-center';
         } else {
-            return 'text-warning';
+            return 'text-warning text-center';
         }
     }
 
     return (
         <>
-            <div className="card">
-                <div className="card-header">
-                    <h5 className="card-title">Calorias Diarias</h5>
+            <div className="card mt-2">
+                <div className="card-header text-center">
+                    <h5>Calorias Diarias</h5>
                 </div>
                 <div className={`card-body ${color(diarias, localStorage.getItem('caloriasDiarias'))}`}>
-                    <h1 className="card-text">{`${diarias}`}</h1>
+                    <h3 className="card-text">{`${diarias}`}</h3>
                 </div>
             </div>
         </>

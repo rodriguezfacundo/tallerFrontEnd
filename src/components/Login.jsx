@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../Store/UserSlice';
 
@@ -44,6 +44,9 @@ export const Login = () => {
           <input type="password" id="inputPassword" className="form-control" placeholder="*****" onChange={(e) => setPassword(e.target.value)} />
         </div>
         <button className="btn btn-success" type='submit' disabled={usuario.length < 5 || password.length < 5}>{loading ? 'Iniciando sesion...' : 'Iniciar Sesion'}</button>
+        <div className='text-end'><Link to='/RegistroUsuario' style={{ color: 'white' }}>Registrar Usuario</Link>
+
+        </div>
       </form>
       {error && (
         <div className='alert alert-danger' style={{ marginTop: '20px' }} role='alert'>{error}</div>

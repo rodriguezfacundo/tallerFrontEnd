@@ -8,14 +8,30 @@ const Grafica2 = () => {
   const hoy = new Date();
 
   if (!registros || registros.length === 0 || !alimentos) {
-    return <p>No hay datos disponibles para el gráfico.</p>;
+    return (<div className="card p-4">
+      <p className="lead">No hay datos disponibles para el gráfico.</p>
+    </div>);
+  }
+  const CaloriasXCantidad = (idAlimento, cantidad) => {
+    const alimento = alimentos.find(a => a.id === idAlimento);
+    const porcionStr = alimento.porcion
+    const porcion = porcionStr.replace(/[^0-9]/g, '');
+
+    const porcionNum = parseInt(porcion, 10);
+
+    const retorno = (cantidad / porcionNum) * (alimento.calorias)
+    return retorno
+
   }
 
   const fechasUltimos7Dias = Array.from({ length: 7 }, (_, index) => {
-    const ahora = new Date(hoy);
-    ahora.setDate(hoy.getDate() - index);
-    const formattedDate = ahora.toISOString().split('T')[0];
+    const fec = new Date(hoy);
+    fec.setDate(hoy.getDate() - index);
+
+    const formattedDate = fec.toISOString().split('T')[0];
+
     return formattedDate;
+
   }).reverse();
 
   const datos = fechasUltimos7Dias.reduce((acumulador, fecha) => {
@@ -27,13 +43,12 @@ const Grafica2 = () => {
       );
     })
 
-    console.log('registrosComidas', registrosComidas)
-
     const totCalorias = registrosComidas.reduce((acc, registro) => {
+      const alimento = alimentos[registro.idAlimento - 1]
 
-      const sum = acc + (alimentos[registro.idAlimento - 1]?.calorias || 0) * registro.cantidad;
+      acc += CaloriasXCantidad(alimento.id, registro.cantidad)
 
-      return sum
+      return parseFloat(acc.toFixed(0))
     }, 0
     );
 
@@ -54,13 +69,7 @@ const Grafica2 = () => {
     xaxis: {
       categories: fechas,
     },
-    title: {
-      text: 'Consumo Calórico Diario',
-      align: 'center',
-      style: {
-        fontSize: '18px',
-      },
-    },
+
     yaxis: {
       title: {
         text: 'Calorías',
@@ -75,7 +84,16 @@ const Grafica2 = () => {
     },
   ];
 
-  return <ReactApexChart options={options} series={series} type="line" height={350} />;
+  return (
+    <div className="container">
+      <div className="card">
+        <div className="card-header">Consumo Calórico Diario</div>
+        <div className="card-body">
+
+          <ReactApexChart options={options} series={series} type="line" height={275} />
+        </div>
+      </div>
+    </div>);
 };
 
 export default Grafica2;

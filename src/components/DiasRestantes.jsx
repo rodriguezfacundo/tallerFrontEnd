@@ -38,12 +38,15 @@ const DiasRestantes = () => {
   }, []);
 
   return (
-    <div className="card" style={{ maxWidth: '300px' }}>
+    <div className="card mt-2">
+      <div className="card-header">Tiempo Restante</div>
       <div className="card-body">
-        <h6 className="card-title">Tiempo Restante</h6>
-        <p className="card-text">{tiempoRestante.dias} días, {tiempoRestante.horas} horas, {tiempoRestante.minutos} minutos, {tiempoRestante.segundos} segundos</p>
+        <p className="card-text ">
+          {`${tiempoRestante.dias} días, ${tiempoRestante.horas} horas, ${tiempoRestante.minutos} minutos, ${tiempoRestante.segundos} segundos`}
+        </p>
       </div>
     </div>
+
   );
 };
 

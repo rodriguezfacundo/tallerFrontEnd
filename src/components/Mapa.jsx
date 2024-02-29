@@ -9,8 +9,8 @@ import 'leaflet/dist/leaflet.css';
 //recibe una lista de marcas, cada una tiene un titulo, contenido y lat, lng, 
 function Mapa({ markersData }) {
     const center = [-17, -65];
-    const zoom = 3;
-    const size = { minWidth: '400px', minHeight: '400px' }
+    const zoom = 2;
+    const size = { minWidth: '320px', minHeight: '320px' }
     const urlTileLayer = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 
     const customMarkerIcon = L.icon({
@@ -23,24 +23,22 @@ function Mapa({ markersData }) {
     });
 
     return (
-        <div >
-            <div  >
-                <MapContainer center={center} zoom={zoom} style={size}>
-                    <TileLayer url={urlTileLayer} />
-                    {markersData?.map(marker => {
-                        const posMarker = [marker.latitude, marker.longitude];
-                        const keyMarker = `${marker.latitude}-${marker.longitude}`;
-                        return (
-                            <Marker key={keyMarker} position={posMarker} icon={customMarkerIcon}>
-                                <Popup>
-                                    <h3>Pais: {marker.name}</h3>
-                                    <p>Cantidad de usuarios: {marker.cantidadDeUsuarios}</p>
-                                </Popup>
-                            </Marker>
-                        )
-                    })}
-                </MapContainer>
-            </div>
+        <div>
+            <MapContainer center={center} zoom={zoom} style={size} className="leaflet-container">
+                <TileLayer url={urlTileLayer} />
+                {markersData?.map(marker => {
+                    const posMarker = [marker.latitude, marker.longitude];
+                    const keyMarker = `${marker.latitude}-${marker.longitude}`;
+                    return (
+                        <Marker key={keyMarker} position={posMarker} icon={customMarkerIcon}>
+                            <Popup>
+                                <h6>Pais: {marker.name}</h6>
+                                <p>Cantidad de usuarios: {marker.cantidadDeUsuarios}</p>
+                            </Popup>
+                        </Marker>
+                    )
+                })}
+            </MapContainer>
         </div>
     )
 }
